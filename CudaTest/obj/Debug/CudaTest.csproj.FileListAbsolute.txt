@@ -1,0 +1,15 @@
+C:\Users\Kim\Documents\CudaTest\CudaTest\bin\Debug\CudaTest.exe.config
+C:\Users\Kim\Documents\CudaTest\CudaTest\bin\Debug\CudaTest.exe
+C:\Users\Kim\Documents\CudaTest\CudaTest\bin\Debug\CudaTest.pdb
+C:\Users\Kim\Documents\CudaTest\CudaTest\bin\Debug\Cudafy.NET.dll
+C:\Users\Kim\Documents\CudaTest\CudaTest\bin\Debug\MathNet.Numerics.dll
+C:\Users\Kim\Documents\CudaTest\CudaTest\bin\Debug\MathNet.Numerics.IO.dll
+C:\Users\Kim\Documents\CudaTest\CudaTest\bin\Debug\OpenCL.Net.dll
+C:\Users\Kim\Documents\CudaTest\CudaTest\bin\Debug\Cudafy.NET.xml
+C:\Users\Kim\Documents\CudaTest\CudaTest\bin\Debug\MathNet.Numerics.pdb
+C:\Users\Kim\Documents\CudaTest\CudaTest\bin\Debug\MathNet.Numerics.xml
+C:\Users\Kim\Documents\CudaTest\CudaTest\bin\Debug\MathNet.Numerics.IO.pdb
+C:\Users\Kim\Documents\CudaTest\CudaTest\bin\Debug\MathNet.Numerics.IO.xml
+C:\Users\Kim\Documents\CudaTest\CudaTest\obj\Debug\CudaTest.csprojResolveAssemblyReference.cache
+C:\Users\Kim\Documents\CudaTest\CudaTest\obj\Debug\CudaTest.exe
+C:\Users\Kim\Documents\CudaTest\CudaTest\obj\Debug\CudaTest.pdb
