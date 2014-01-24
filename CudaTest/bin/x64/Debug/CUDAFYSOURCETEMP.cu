@@ -22,7 +22,7 @@ __device__ int isPrime(int a);
 extern "C" __global__ void doTheThing( ProgramTestClass* tests, int testsLen0)
 {
 	int x = blockIdx.x;
-	if (x < 200000)
+	if (x < 1000000)
 	{
 		ProgramTestClass testClass = tests[(x)];
 		testClass.C = testClass.A + testClass.B;
@@ -32,7 +32,7 @@ extern "C" __global__ void doTheThing( ProgramTestClass* tests, int testsLen0)
 extern "C" __global__ void addArrays( int* a, int aLen0,  int* b, int bLen0,  int* c, int cLen0)
 {
 	int x = blockIdx.x;
-	if (x < 200000)
+	if (x < 1000000)
 	{
 		c[(x)] = a[(x)] + b[(x)];
 	}
@@ -41,18 +41,9 @@ extern "C" __global__ void addArrays( int* a, int aLen0,  int* b, int bLen0,  in
 extern "C" __global__ void findPrimes( int* toCheck, int toCheckLen0,  int* results, int resultsLen0)
 {
 	int x = blockIdx.x;
-	if (x < 200000)
+	if (x < 1000000)
 	{
 		results[(x)] = isPrime(toCheck[(x)]);
-		int num = 3;
-		for (int i = 1; i < num; i++)
-		{
-			int num2 = x + i * 65535;
-			if (num2 < 200000)
-			{
-				results[(num2)] = isPrime(toCheck[(num2)]);
-			}
-		}
 	}
 }
 // CudaTest.Program

@@ -13,7 +13,7 @@ namespace CudaTest
 {
     public class Program
     {
-        private const int N = 200000;
+        private const int N = 1000000;
         private const int MAX_THREADS = 65535;
 
         [Cudafy]
@@ -40,36 +40,36 @@ namespace CudaTest
             {
                 gpu.LoadModule(cm);
 
-                var test = new TestClass[N];
+                //var test = new TestClass[N];
 
-                for (var i = 0; i < N; i++)
-                {
-                    test[i] = new TestClass() {A = -i, B = i*i};
-                }
+                //for (var i = 0; i < N; i++)
+                //{
+                //    test[i] = new TestClass() {A = -i, B = i*i};
+                //}
 
-                var dev_test = gpu.CopyToDevice(test);
+                //var dev_test = gpu.CopyToDevice(test);
 
-                int[] ints = new int[N];
+                //int[] ints = new int[N];
 
-                for (var i = 0; i < N; i++)
-                {
-                    ints[i] = i;
-                }
+                //for (var i = 0; i < N; i++)
+                //{
+                //    ints[i] = i;
+                //}
 
-                var start = DateTime.Now;
+                //var start = DateTime.Now;
 
-                gpu.Launch(MAX_THREADS, 1).doTheThing(dev_test);
-                TestClass[] testRes = new TestClass[N];
-                gpu.CopyFromDevice(dev_test, testRes);
+                //gpu.Launch(MAX_THREADS, 1).doTheThing(dev_test);
+                //TestClass[] testRes = new TestClass[N];
+                //gpu.CopyFromDevice(dev_test, testRes);
 
-                var tt = DateTime.Now - start;
+                //var tt = DateTime.Now - start;
 
-                start = DateTime.Now;
+                //start = DateTime.Now;
 
-                var tt2 = DateTime.Now - start;
+                //var tt2 = DateTime.Now - start;
 
-                Console.WriteLine("GPU: {0} ticks, {2}ms, CPU: {1}, {3}ms", tt.Ticks, tt2.Ticks, tt.TotalMilliseconds,
-                                  tt2.TotalMilliseconds);
+                //Console.WriteLine("GPU: {0} ticks, {2}ms, CPU: {1}, {3}ms", tt.Ticks, tt2.Ticks, tt.TotalMilliseconds,
+                //                  tt2.TotalMilliseconds);
 
                 //for (var i = 0; i < 10000; i++)
                 //{
@@ -85,24 +85,42 @@ namespace CudaTest
 
         public static void cudaPrimes(GPGPU gpu)
         {
-            int[] ints = new int[N];
+            var timesMax = N/MAX_THREADS;
+            var rem = N%MAX_THREADS;
+            var index1 = rem > 0 ? timesMax + 1 : timesMax;
+            int[][] ints = new int[index1][];
+            int[] cpuInts = new int[N];
 
             for (int i = 0; i < N; i++)
             {
-                ints[i] = i;
+                cpuInts[i] = i;
+                var ind1 = i/MAX_THREADS;
+                var ind2 = i%MAX_THREADS;
+                if (ind2 == 0)
+                {
+                    ints[ind1] = new int[MAX_THREADS];
+                }
+                ints[ind1][ind2] = i;
             }
 
-            int[] results = new int[N];
+            int[][] totalResults = new int[index1][];
+            
             var start = DateTime.Now;
-            var ints_c = gpu.CopyToDevice(ints);
+            for (var j = 0; j < index1; j++)
+            {
+                int[] results = new int[MAX_THREADS];
+                var ints_c = gpu.CopyToDevice(ints[j]);
 
-            var results_c = gpu.Allocate<int>(results);
-            gpu.Launch(MAX_THREADS, 1).findPrimes(ints_c, results_c);
-            gpu.CopyFromDevice(results_c, results);
+                var results_c = gpu.Allocate<int>(results);
+                gpu.Launch(MAX_THREADS, 1).findPrimes(ints_c, results_c);
+                gpu.CopyFromDevice(results_c, results);
+                totalResults[j] = results;
+                gpu.FreeAll();
+            }
 
             var tt = DateTime.Now - start;
             Console.WriteLine("GPU: {0} ticks, {1}ms, found {2} primes", tt.Ticks, tt.TotalMilliseconds,
-                              results.Count(r => r == 1));
+                              totalResults.Sum(r => r.Sum()));
 
             start = DateTime.Now;
 
@@ -110,7 +128,7 @@ namespace CudaTest
 
             // cpu version
             int[] cpuResults = new int[N];
-            findPrimesCpu(ints, cpuResults);
+            findPrimesCpu(cpuInts, cpuResults);
             var tt2 = DateTime.Now - start;
 
             Console.WriteLine("CPU: {0}, {1}ms, found {2} primes", tt2.Ticks, tt2.TotalMilliseconds, cpuResults.Sum());
@@ -145,31 +163,21 @@ namespace CudaTest
         public static void findPrimes(GThread thread, int[] toCheck, int[] results)
         {
             int tid = thread.blockIdx.x;
+
             if (tid < N)
             {
                 results[tid] = isPrime(toCheck[tid]);
-                if (N > MAX_THREADS)
-                {
-                    var i = N / MAX_THREADS;
-                    for (var j = 1; j < i; j++)
-                    {
-                        var inx = tid + j * MAX_THREADS;
-                        if (inx < N)
-                        {
-                            results[inx] = isPrime(toCheck[inx]);
-                        }
-                    }
-                }
             }
         }
 
         public static void findPrimesCpu(int[] toCheck, int[] results)
         {
-            for (var i = 0; i < N; i++)
-            {
-                int b = isPrime(toCheck[i]);
-                results[i] = b;
-            }
+            toCheck.Select(v => isPrime(v)).ToArray().CopyTo(results, 0);
+            //for (var i = 0; i < N; i++)
+            //{
+            //    int b = isPrime(toCheck[i]);
+            //    results[i] = b;
+            //}
         }
 
         [Cudafy]
