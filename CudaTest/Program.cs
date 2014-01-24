@@ -68,13 +68,13 @@ namespace CudaTest
 
                 var tt2 = DateTime.Now - start;
 
-                Console.WriteLine("GPU: {0} ticks, {2}ms, CPU: {1}, {3}ms", tt.Ticks, tt2.Ticks, tt.Milliseconds,
-                                  tt2.Milliseconds);
+                Console.WriteLine("GPU: {0} ticks, {2}ms, CPU: {1}, {3}ms", tt.Ticks, tt2.Ticks, tt.TotalMilliseconds,
+                                  tt2.TotalMilliseconds);
 
-                for (var i = 0; i < 10000; i++)
-                {
+                //for (var i = 0; i < 10000; i++)
+                //{
                     cudaPrimes(gpu);
-                }
+                //}
             }
             finally
             {
@@ -101,19 +101,19 @@ namespace CudaTest
             gpu.CopyFromDevice(results_c, results);
 
             var tt = DateTime.Now - start;
-            Console.WriteLine("GPU: {0} ticks, {1}ms, found {2} primes", tt.Ticks, tt.Milliseconds,
+            Console.WriteLine("GPU: {0} ticks, {1}ms, found {2} primes", tt.Ticks, tt.TotalMilliseconds,
                               results.Count(r => r == 1));
-            
-            //start = DateTime.Now;
 
-            //Console.WriteLine("Start CPU: " + start.ToLongTimeString());
+            start = DateTime.Now;
 
-            //// cpu version
-            //int[] cpuResults = new int[N];
-            //findPrimesCpu(ints, cpuResults);
-            //var tt2 = DateTime.Now - start;
+            Console.WriteLine("Start CPU: " + start.ToLongTimeString());
 
-            //Console.WriteLine("CPU: {0}, {1}ms, found {2} primes", tt2.Ticks, tt2.Milliseconds, cpuResults.Sum());
+            // cpu version
+            int[] cpuResults = new int[N];
+            findPrimesCpu(ints, cpuResults);
+            var tt2 = DateTime.Now - start;
+
+            Console.WriteLine("CPU: {0}, {1}ms, found {2} primes", tt2.Ticks, tt2.TotalMilliseconds, cpuResults.Sum());
 
             //for (int i = 0; i < N; i++)
             //{
